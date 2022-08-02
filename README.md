@@ -125,3 +125,43 @@ SegFormer是一款基于Transformer构建的具有简单结构的语义分割网
 
 下面则是本项目的训练过程
 
+# 模型训练
+
+```
+!python AI-Studio-LrCompetition-Segmentation-of-sensing-imageblock/train.py \
+    --config AI-Studio-LrCompetition-Segmentation-of-sensing-imageblock/myconfig/segformer-b2-rs.yml \
+    --use_vdl \
+    --do_eval \
+    --num_workers 4 \
+    --save_interval 10000 \
+    --save_dir segformer-b2-rs \
+    --log_iters 2000 
+```
+# 推理预测和生成比赛文件
+```
+!python AI-Studio-LrCompetition-Segmentation-of-sensing-imageblock/predict.py \
+       --config AI-Studio-LrCompetition-Segmentation-of-sensing-imageblock/myconfig/segformer-b2-rs.yml \
+       --model_path segformer-b2-rs/model.pdparams \
+       --aug_pred \
+       --scales 0.75 1.0 1.25 \
+       --image_path data/img_testA \
+       --custom_color 0 0 0 1 1 1 2 2 2 3 3 3 \
+       --save_dir result/SegFormer-B2/
+```
+
+# 生成比赛文件
+```
+import os
+import tqdm
+import cv2
+
+img_path = "/home/aistudio/result/SegFormer-B2/pseudo_color_prediction"
+rst_path =  "/home/aistudio/result/SegFormer-B2/result"
+if not os.path.exists(rst_path):
+    os.makedirs(rst_path)
+file_list = os.listdir(img_path)
+img_list = [os.path.join(img_path, name) for name in file_list]
+for i,img_file in tqdm.tqdm(enumerate(img_list)):
+    img = cv2.imread(img_file,cv2.IMREAD_GRAYSCALE)
+    cv2.imwrite(os.path.join(rst_path,file_list[i]),img)
+```
