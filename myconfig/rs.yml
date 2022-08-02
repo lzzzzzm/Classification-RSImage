@@ -1,8 +1,8 @@
 train_dataset:
   type: MyDataset
-  dataset_root: /home/aistudio
+  dataset_root: /home/aistudio/
   train_path: /home/aistudio/train_list.txt
-  sample_path: /home/aistudio/sample.txt
+  sample_file_path: /home/aistudio/sample.txt
   num_classes: 4
   transforms:
     - type: ResizeStepScaling
