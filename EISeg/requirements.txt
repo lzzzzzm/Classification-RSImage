@@ -1,0 +1,13 @@
+pyqt5
+qtpy
+opencv-python
+scipy
+paddleseg
+albumentations
+cython
+pyyaml
+wget
+requests
+easydict
+scikit-image
+protobuf==3.20.0
