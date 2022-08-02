@@ -70,9 +70,18 @@ class SegFormer(nn.Layer):
             kernel_size=1,
             bias_attr=False)
 
-        self.linear_pred = nn.Conv2D(
-            embedding_dim, self.num_classes, kernel_size=1)
-
+        # self.linear_pred = nn.Conv2D(
+        #     embedding_dim, self.num_classes, kernel_size=1)
+        self.linear_pred = nn.Sequential(
+            nn.Conv2D(embedding_dim, embedding_dim >> 2, 3, padding=1, bias_attr=False),
+            nn.BatchNorm2D(embedding_dim >> 2),
+            nn.ReLU(),
+            nn.Conv2DTranspose(embedding_dim >> 2, embedding_dim >> 3, kernel_size=2, stride=2, bias_attr=True),
+            nn.BatchNorm2D(embedding_dim >> 3),
+            nn.ReLU(),
+            nn.Conv2DTranspose(embedding_dim >> 3, embedding_dim >> 4, kernel_size=2, stride=2, bias_attr=True),
+            nn.Conv2D(embedding_dim >> 4, num_classes, 1)
+        )
         self.init_weight()
 
     def init_weight(self):
@@ -121,11 +130,12 @@ class SegFormer(nn.Layer):
         logit = self.dropout(_c)
         logit = self.linear_pred(logit)
         return [
-            F.interpolate(
-                logit,
-                size=paddle.shape(x)[2:],
-                mode='bilinear',
-                align_corners=self.align_corners)
+            logit
+            # F.interpolate(
+            #     logit,
+            #     size=paddle.shape(x)[2:],
+            #     mode='bilinear',
+            #     align_corners=self.align_corners)
         ]
 
 
